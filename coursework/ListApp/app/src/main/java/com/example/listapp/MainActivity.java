@@ -11,6 +11,8 @@ public class MainActivity extends AppCompatActivity {
 
     ListView myListView;
     String[] items;
+    String[] prices;
+    String[] descriptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +22,10 @@ public class MainActivity extends AppCompatActivity {
         Resources res = getResources();
         myListView = (ListView) findViewById(R.id.myListView);
         items = res.getStringArray(R.array.items);
+        prices = res.getStringArray(R.array.prices);
+        descriptions = res.getStringArray(R.array.descriptions);
 
-        myListView.setAdapter(new ArrayAdapter<String>(this, R.layout.my_listview_detail, items));
-
+        ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, descriptions);
+        myListView.setAdapter(itemAdapter);
     }
 }
