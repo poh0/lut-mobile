@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity(tableName = "assignments")
 public class Assignment implements Serializable {
@@ -19,10 +20,10 @@ public class Assignment implements Serializable {
     String description = "";
 
     @ColumnInfo(name = "givenDate")
-    String givenDate = "";
+    Date givenDate;
 
     @ColumnInfo(name = "deadlineDate")
-    String deadlineDate = "";
+    Date deadlineDate = new Date();
 
     @ColumnInfo(name = "done")
     boolean done = false;
@@ -51,19 +52,19 @@ public class Assignment implements Serializable {
         this.description = description;
     }
 
-    public String getGivenDate() {
+    public Date getGivenDate() {
         return givenDate;
     }
 
-    public void setGivenDate(String givenDate) {
+    public void setGivenDate(Date givenDate) {
         this.givenDate = givenDate;
     }
 
-    public String getDeadlineDate() {
+    public Date getDeadlineDate() {
         return deadlineDate;
     }
 
-    public void setDeadlineDate(String deadlineDate) {
+    public void setDeadlineDate(Date deadlineDate) {
         this.deadlineDate = deadlineDate;
     }
 

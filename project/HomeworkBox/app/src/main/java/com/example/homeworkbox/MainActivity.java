@@ -36,10 +36,19 @@ public class MainActivity extends AppCompatActivity {
         Assignment a2 = new Assignment();
         a2.setSubject("Chinese");
         a2.setDescription("Revise vocab for the test");
+        a2.setDone(true);
+        Assignment a3 = new Assignment();
+        a3.setSubject("Biology");
+        a3.setDescription("Write 5 pages essay about oceans");
+        Assignment a4 = new Assignment();
+        a4.setSubject("History");
+        a4.setDescription("Chapter 3: ex 6");
 
         assignments = new ArrayList<Assignment>();
         assignments.add(a1);
         assignments.add(a2);
+        assignments.add(a3);
+        assignments.add(a4);
 
         AssignmentAdapter assignmentAdapter = new AssignmentAdapter(this, assignments);
         assignmentListView.setAdapter(assignmentAdapter);
