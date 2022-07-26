@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,20 +30,28 @@ public class MainActivity extends AppCompatActivity {
         db = RoomDB.getInstance(this);
         dao = db.assignmentDAO();
 
+        Date today = new Date();
+
         // ADD SOME TESTING DATA
         Assignment a1 = new Assignment();
         a1.setSubject("Maths");
         a1.setDescription("p.23 ex.3,4,5");
+        a1.setDeadlineDate(new Date(today.getTime() + 24*60*60*1000));
+
         Assignment a2 = new Assignment();
         a2.setSubject("Chinese");
         a2.setDescription("Revise vocab for the test");
         a2.setDone(true);
+
         Assignment a3 = new Assignment();
         a3.setSubject("Biology");
         a3.setDescription("Write 5 pages essay about oceans");
+        a3.setDeadlineDate(new Date(today.getTime() + 2*24*60*60*1000));
+
         Assignment a4 = new Assignment();
         a4.setSubject("History");
         a4.setDescription("Chapter 3: ex 6");
+        a4.setDeadlineDate(new Date(today.getTime() - 3*24*60*60*1000));
 
         assignments = new ArrayList<Assignment>();
         assignments.add(a1);
