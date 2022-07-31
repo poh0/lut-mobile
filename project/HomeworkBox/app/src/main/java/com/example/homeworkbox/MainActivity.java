@@ -7,12 +7,16 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
         AssignmentAdapter assignmentAdapter = new AssignmentAdapter(this, assignments);
         assignmentListView.setAdapter(assignmentAdapter);
+        assignmentListView.setEmptyView(findViewById(R.id.emptyElement));
 
         Button addAssignmentBtn = (Button) findViewById(R.id.addAssignmentBtn);
         addAssignmentBtn.setOnClickListener(new View.OnClickListener() {
@@ -48,6 +53,42 @@ public class MainActivity extends AppCompatActivity {
                 Intent newAssignment
                         = new Intent(getApplicationContext(), AddAssignmentActivity.class);
                 newAssignmentResultLauncher.launch(newAssignment);
+            }
+        });
+
+        assignmentListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int itemIndex, long l) {
+
+                final AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
+                b.setMessage("Choose action");
+
+                Assignment currentAssignment = assignments.get(itemIndex);
+                final String doneTitle = currentAssignment.isDone()
+                        ? "Mark as undone"
+                        : "Mark as done";
+
+                b.setPositiveButton(doneTitle, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        currentAssignment.setDone(!currentAssignment.isDone());
+                        dao.insert(currentAssignment);
+                        assignments.clear();
+                        assignments.addAll(dao.getAll());
+                        ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
+                    }
+                });
+                b.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dao.delete(assignments.get(itemIndex));
+                        assignments.clear();
+                        assignments.addAll(dao.getAll());
+                        ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
+                    }
+                });
+                b.show();
+                return true;
             }
         });
 
