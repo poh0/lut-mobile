@@ -55,8 +55,8 @@ public class AddAssignmentActivity extends AppCompatActivity {
         setListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                assignment.setDeadlineDate(new Date(year - 1900, month, day));
                 month += 1;
-                assignment.setDeadlineDate(new Date(year, month, day));
                 String date = day + "." + month + "." + year;
                 dateEditText.setText(date);
             }

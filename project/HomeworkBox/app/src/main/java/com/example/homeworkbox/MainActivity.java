@@ -1,7 +1,12 @@
 package com.example.homeworkbox;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -19,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     RoomDB db;
     AssignmentDAO dao;
     List<Assignment> assignments;
+    AssignmentAdapter assignmentAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,34 +36,7 @@ public class MainActivity extends AppCompatActivity {
         db = RoomDB.getInstance(this);
         dao = db.assignmentDAO();
 
-        Date today = new Date();
-
-        // ADD SOME TESTING DATA
-        Assignment a1 = new Assignment();
-        a1.setSubject("Maths");
-        a1.setDescription("p.23 ex.3,4,5");
-        a1.setDeadlineDate(new Date(today.getTime() + 24*60*60*1000));
-
-        Assignment a2 = new Assignment();
-        a2.setSubject("Chinese");
-        a2.setDescription("Revise vocab for the test");
-        a2.setDone(true);
-
-        Assignment a3 = new Assignment();
-        a3.setSubject("Biology");
-        a3.setDescription("Write 5 pages essay about oceans");
-        a3.setDeadlineDate(new Date(today.getTime() + 2*24*60*60*1000));
-
-        Assignment a4 = new Assignment();
-        a4.setSubject("History");
-        a4.setDescription("Chapter 3: ex 6");
-        a4.setDeadlineDate(new Date(today.getTime() - 3*24*60*60*1000));
-
-        assignments = new ArrayList<Assignment>();
-        assignments.add(a1);
-        assignments.add(a2);
-        assignments.add(a3);
-        assignments.add(a4);
+        assignments = dao.getAll();
 
         AssignmentAdapter assignmentAdapter = new AssignmentAdapter(this, assignments);
         assignmentListView.setAdapter(assignmentAdapter);
@@ -68,8 +47,25 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent newAssignment
                         = new Intent(getApplicationContext(), AddAssignmentActivity.class);
-                startActivity(newAssignment);
+                newAssignmentResultLauncher.launch(newAssignment);
             }
         });
+
     }
+
+    ActivityResultLauncher<Intent> newAssignmentResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        Assignment newAssignment = (Assignment) data.getSerializableExtra("com.example.assignment");
+                        dao.insert(newAssignment);
+                        assignments.clear();
+                        assignments.addAll(dao.getAll());
+                        ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
+                    }
+                }
+            });
 }
