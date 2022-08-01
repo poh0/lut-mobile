@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -35,17 +36,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        assignmentListView = (ListView) findViewById(R.id.assignmentListView);
-
+        // Init db
         db = RoomDB.getInstance(this);
         dao = db.assignmentDAO();
 
         assignments = dao.getAll();
 
+        // Initialize assignmentListView
+        assignmentListView = (ListView) findViewById(R.id.assignmentListView);
         AssignmentAdapter assignmentAdapter = new AssignmentAdapter(this, assignments);
         assignmentListView.setAdapter(assignmentAdapter);
         assignmentListView.setEmptyView(findViewById(R.id.emptyElement));
 
+        // Initialize filter dropdown
+        Spinner filterSpinner = (Spinner) findViewById(R.id.filterSpinner);
+        String[] options = {"No filter", "Only done", "Only undone"};
+        
+        ArrayAdapter<String> filterAdapter = new ArrayAdapter<String>(
+                MainActivity.this, R.layout.spinner_item_layout, options);
+        filterAdapter.setDropDownViewResource(R.layout.spinner_item_layout);
+        filterSpinner.setAdapter(filterAdapter);
+
+        // Initialize addAssignmentBtn
         Button addAssignmentBtn = (Button) findViewById(R.id.addAssignmentBtn);
         addAssignmentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Long click listener for deleting and marking as done
         assignmentListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int itemIndex, long l) {
