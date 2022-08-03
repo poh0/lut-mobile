@@ -6,10 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -18,26 +21,27 @@ public class AssignmentAdapter extends BaseAdapter {
 
     LayoutInflater mInflater;
     List<Assignment> assignments;
+    List<Assignment> filteredAssignments;
 
     public AssignmentAdapter(Context context, List<Assignment> as) {
         assignments = as;
+        filteredAssignments = as;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return assignments.size();
+        return filteredAssignments.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return assignments.get(i);
+        return filteredAssignments.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        // prob. not necessary but why not
-        return assignments.get(i).getID();
+        return filteredAssignments.get(i).getID();
     }
 
     @Override
@@ -78,4 +82,24 @@ public class AssignmentAdapter extends BaseAdapter {
         return v;
     }
 
+    public void filter(int filterMode) {
+        filteredAssignments = new ArrayList<Assignment>();
+        if (filterMode == 0) {
+            resetFilter();
+            return;
+        }
+        for (Assignment as : assignments) {
+            if (as.isDone() && filterMode == 1) {
+                filteredAssignments.add(as);
+            } else if (!as.isDone() && filterMode == 2) {
+                filteredAssignments.add(as);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public void resetFilter() {
+        filteredAssignments = assignments;
+        notifyDataSetChanged();
+    }
 }

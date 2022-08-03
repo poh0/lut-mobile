@@ -31,10 +31,14 @@ public class MainActivity extends AppCompatActivity {
     List<Assignment> assignments;
     AssignmentAdapter assignmentAdapter;
 
+    private int currentFilter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        currentFilter = 0;
 
         // Init db
         db = RoomDB.getInstance(this);
@@ -50,12 +54,26 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize filter dropdown
         Spinner filterSpinner = (Spinner) findViewById(R.id.filterSpinner);
-        String[] options = {"No filter", "Only done", "Only undone"};
-        
+        String[] options = getResources().getStringArray(R.array.options);
+
         ArrayAdapter<String> filterAdapter = new ArrayAdapter<String>(
                 MainActivity.this, R.layout.spinner_item_layout, options);
         filterAdapter.setDropDownViewResource(R.layout.spinner_item_layout);
         filterSpinner.setAdapter(filterAdapter);
+
+        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (currentFilter == i)
+                    return;
+                currentFilter = i;
+                assignmentAdapter.filter(currentFilter);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // Initialize addAssignmentBtn
         Button addAssignmentBtn = (Button) findViewById(R.id.addAssignmentBtn);
@@ -88,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                         dao.insert(currentAssignment);
                         assignments.clear();
                         assignments.addAll(dao.getAll());
-                        ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
+                        assignmentAdapter.filter(currentFilter);
                     }
                 });
                 b.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
@@ -97,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                         dao.delete(assignments.get(itemIndex));
                         assignments.clear();
                         assignments.addAll(dao.getAll());
-                        ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
+                        assignmentAdapter.filter(currentFilter);
                     }
                 });
                 b.show();

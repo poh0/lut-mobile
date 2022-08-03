@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">HomeworkBox</string>
+    <string name="no_filter">No filter</string>
+    <string name="only_done">Only done</string>
+    <string name="only_undone">Only undone</string>
+    <string-array name="options">
+        <item>@string/no_filter</item>
+        <item>@string/only_done</item>
+        <item>@string/only_undone</item>
+    </string-array>
 </resources>
