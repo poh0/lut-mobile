@@ -21,27 +21,25 @@ public class AssignmentAdapter extends BaseAdapter {
 
     LayoutInflater mInflater;
     List<Assignment> assignments;
-    List<Assignment> filteredAssignments;
 
     public AssignmentAdapter(Context context, List<Assignment> as) {
         assignments = as;
-        filteredAssignments = as;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return filteredAssignments.size();
+        return assignments.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return filteredAssignments.get(i);
+        return assignments.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        return filteredAssignments.get(i).getID();
+        return assignments.get(i).getID();
     }
 
     @Override
@@ -80,26 +78,5 @@ public class AssignmentAdapter extends BaseAdapter {
         }
 
         return v;
-    }
-
-    public void filter(int filterMode) {
-        filteredAssignments = new ArrayList<Assignment>();
-        if (filterMode == 0) {
-            resetFilter();
-            return;
-        }
-        for (Assignment as : assignments) {
-            if (as.isDone() && filterMode == 1) {
-                filteredAssignments.add(as);
-            } else if (!as.isDone() && filterMode == 2) {
-                filteredAssignments.add(as);
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void resetFilter() {
-        filteredAssignments = assignments;
-        notifyDataSetChanged();
     }
 }

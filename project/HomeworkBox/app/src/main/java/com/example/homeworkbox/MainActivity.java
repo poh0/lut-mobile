@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     RoomDB db;
     AssignmentDAO dao;
     List<Assignment> assignments;
+    List<Assignment> filteredAssignments;
     AssignmentAdapter assignmentAdapter;
 
     private int currentFilter;
@@ -45,10 +46,12 @@ public class MainActivity extends AppCompatActivity {
         dao = db.assignmentDAO();
 
         assignments = dao.getAll();
+        filteredAssignments = new ArrayList<Assignment>();
+        filteredAssignments.addAll(assignments);
 
         // Initialize assignmentListView
         assignmentListView = (ListView) findViewById(R.id.assignmentListView);
-        assignmentAdapter = new AssignmentAdapter(this, assignments);
+        assignmentAdapter = new AssignmentAdapter(this, filteredAssignments);
         assignmentListView.setAdapter(assignmentAdapter);
         assignmentListView.setEmptyView(findViewById(R.id.emptyElement));
 
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 if (currentFilter == i)
                     return;
                 currentFilter = i;
-                assignmentAdapter.filter(currentFilter);
+                filter();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -92,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent updateAssignment
                         = new Intent(getApplicationContext(), AddAssignmentActivity.class);
-                updateAssignment.putExtra("assignment", assignments.get(i));
+                updateAssignment.putExtra("assignment", filteredAssignments.get(i));
                 newAssignmentResultLauncher.launch(updateAssignment);
             }
         });
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 final AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
                 b.setMessage("Choose action");
 
-                Assignment currentAssignment = assignments.get(itemIndex);
+                Assignment currentAssignment = filteredAssignments.get(itemIndex);
                 final String doneTitle = currentAssignment.isDone()
                         ? "Mark as undone"
                         : "Mark as done";
@@ -117,23 +120,44 @@ public class MainActivity extends AppCompatActivity {
                         dao.insert(currentAssignment);
                         assignments.clear();
                         assignments.addAll(dao.getAll());
-                        assignmentAdapter.filter(currentFilter);
+                        filter();
                     }
                 });
                 b.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        dao.delete(assignments.get(itemIndex));
+                        dao.delete(filteredAssignments.get(itemIndex));
                         assignments.clear();
                         assignments.addAll(dao.getAll());
-                        assignmentAdapter.filter(currentFilter);
+                        filter();
                     }
                 });
                 b.show();
                 return true;
             }
         });
+    }
 
+    public void filter() {
+        filteredAssignments.clear();
+        if (currentFilter == 0) {
+            resetFilter();
+            return;
+        }
+        for (Assignment as : assignments) {
+            if (as.isDone() && currentFilter == 1) {
+                filteredAssignments.add(as);
+            } else if (!as.isDone() && currentFilter == 2) {
+                filteredAssignments.add(as);
+            }
+        }
+        ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
+    }
+
+    public void resetFilter() {
+        filteredAssignments.clear();
+        filteredAssignments.addAll(assignments);
+        ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
     }
 
     ActivityResultLauncher<Intent> newAssignmentResultLauncher = registerForActivityResult(
@@ -147,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                         dao.insert(newAssignment);
                         assignments.clear();
                         assignments.addAll(dao.getAll());
-                        ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
+                        filter();
                     }
                 }
             });
