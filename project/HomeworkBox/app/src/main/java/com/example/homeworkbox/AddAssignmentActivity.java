@@ -25,23 +25,39 @@ public class AddAssignmentActivity extends AppCompatActivity {
 
     Assignment assignment;
 
+    int year;
+    int month;
+    int day;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_assignment);
-
-        assignment = new Assignment();
 
         subjectEditText = (EditText) findViewById(R.id.subjectEditText);
         descriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
         dateEditText = (EditText) findViewById(R.id.dateEditText);
         createAssignmentBtn = (Button) findViewById(R.id.createAssignmentBtn);
 
-        // Getting current year, month and day for the DatePickerDialog
-        Calendar calendar = Calendar.getInstance();
-        final int year = calendar.get(Calendar.YEAR);
-        final int month = calendar.get(Calendar.MONTH);
-        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+        if ((assignment = (Assignment) getIntent().getSerializableExtra("assignment")) != null) {
+            subjectEditText.setText(assignment.getSubject());
+            descriptionEditText.setText(assignment.getDescription());
+            createAssignmentBtn.setText("Update");
+
+            Date deadline = assignment.getDeadlineDate();
+            year = deadline.getYear() + 1900;
+            month = deadline.getMonth() + 1;
+            day = deadline.getDate();
+            dateEditText.setText(day + "." + month + "." + year);
+        } else {
+            assignment = new Assignment();
+
+            // Getting current year, month and day for the DatePickerDialog
+            Calendar calendar = Calendar.getInstance();
+            year = calendar.get(Calendar.YEAR);
+            month = calendar.get(Calendar.MONTH);
+            day = calendar.get(Calendar.DAY_OF_MONTH);
+        }
 
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override

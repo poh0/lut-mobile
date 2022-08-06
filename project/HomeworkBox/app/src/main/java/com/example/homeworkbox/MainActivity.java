@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize assignmentListView
         assignmentListView = (ListView) findViewById(R.id.assignmentListView);
-        AssignmentAdapter assignmentAdapter = new AssignmentAdapter(this, assignments);
+        assignmentAdapter = new AssignmentAdapter(this, assignments);
         assignmentListView.setAdapter(assignmentAdapter);
         assignmentListView.setEmptyView(findViewById(R.id.emptyElement));
 
@@ -83,6 +83,17 @@ public class MainActivity extends AppCompatActivity {
                 Intent newAssignment
                         = new Intent(getApplicationContext(), AddAssignmentActivity.class);
                 newAssignmentResultLauncher.launch(newAssignment);
+            }
+        });
+
+        // Click listener for updating an assignment
+        assignmentListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent updateAssignment
+                        = new Intent(getApplicationContext(), AddAssignmentActivity.class);
+                updateAssignment.putExtra("assignment", assignments.get(i));
+                newAssignmentResultLauncher.launch(updateAssignment);
             }
         });
 
