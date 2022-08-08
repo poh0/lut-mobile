@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         db = RoomDB.getInstance(this);
         dao = db.assignmentDAO();
 
+        // Get assignments from db
         assignments = dao.getAll();
         filteredAssignments = new ArrayList<Assignment>();
         filteredAssignments.addAll(assignments);
@@ -64,9 +65,11 @@ public class MainActivity extends AppCompatActivity {
         filterAdapter.setDropDownViewResource(R.layout.spinner_item_layout);
         filterSpinner.setAdapter(filterAdapter);
 
+        // Apply filter when selected
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // if chosen filter is the current filter, do nothing
                 if (currentFilter == i)
                     return;
                 currentFilter = i;
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                // auto-generated
             }
         });
 
@@ -83,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         addAssignmentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Launch the view for adding an assignment
                 Intent newAssignment
                         = new Intent(getApplicationContext(), AddAssignmentActivity.class);
                 newAssignmentResultLauncher.launch(newAssignment);
@@ -93,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
         assignmentListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // Same as adding a new assignment, but we provide the clicked assignment
+                // as extra
                 Intent updateAssignment
                         = new Intent(getApplicationContext(), AddAssignmentActivity.class);
                 updateAssignment.putExtra("assignment", filteredAssignments.get(i));
@@ -138,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Filtering logic
+    // This has to be run every time a change to assignments is made
     public void filter() {
         filteredAssignments.clear();
         if (currentFilter == 0) {
@@ -151,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 filteredAssignments.add(as);
             }
         }
+        // Update list after filtering
         ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
     }
 
@@ -160,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
         ((AssignmentAdapter) assignmentListView.getAdapter()).notifyDataSetChanged();
     }
 
+    // The old method was deprecated so I had to use this monster
+    // https://stackoverflow.com/questions/62671106/onactivityresult-method-is-deprecated-what-is-the-alternative
     ActivityResultLauncher<Intent> newAssignmentResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {

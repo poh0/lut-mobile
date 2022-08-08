@@ -46,7 +46,7 @@ public class AddAssignmentActivity extends AppCompatActivity {
 
             Date deadline = assignment.getDeadlineDate();
             year = deadline.getYear() + 1900;
-            month = deadline.getMonth() + 1;
+            month = deadline.getMonth();
             day = deadline.getDate();
             dateEditText.setText(day + "." + month + "." + year);
         } else {
