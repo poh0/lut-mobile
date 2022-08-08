@@ -14,7 +14,7 @@ public interface AssignmentDAO {
     @Insert(onConflict = REPLACE)
     void insert(Assignment assignment);
 
-    @Query("SELECT * FROM assignments ORDER BY id DESC")
+    @Query("SELECT * FROM assignments ORDER BY deadlineDate ASC")
     List<Assignment> getAll();
 
     @Delete
